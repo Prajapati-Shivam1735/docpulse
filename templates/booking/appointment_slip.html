@@ -1,0 +1,110 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Appointment Slip - {{ appointment.booking_reference }} - DocPulse{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Digital Pass Container -->
+            <div class="appointment-pass">
+                <!-- Top Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <div class="navbar-brand mb-0">
+                        <i class="fa-solid fa-heart-pulse text-primary"></i>
+                        <span>Doc<span class="pulse">Pulse</span></span>
+                        <span class="badge bg-light text-secondary border ms-2 small">Digital Pass</span>
+                    </div>
+                    <div>
+                        <span class="badge-status-{{ appointment.status|lower }}">
+                            <i class="fa-solid fa-circle-dot me-1"></i> {{ appointment.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Token and Reference Highlight -->
+                <div class="row align-items-center bg-light p-4 rounded-3 mb-4 text-center text-sm-start gy-3">
+                    <div class="col-sm-4 text-center">
+                        <div class="token-circle">
+                            <span class="label">Queue Token</span>
+                            <span class="num">{{ appointment.formatted_token }}</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="text-muted small">Official Booking Reference</div>
+                        <h4 class="fw-bold font-monospace text-primary mb-2">{{ appointment.booking_reference }}</h4>
+                        <div class="small text-muted">
+                            <i class="fa-regular fa-calendar me-1 text-primary"></i> <strong>{{ appointment.appointment_date|date:"l, F d, Y" }}</strong>
+                            <span class="mx-2">&bull;</span>
+                            <i class="fa-regular fa-clock me-1 text-primary"></i> <strong>{{ appointment.appointment_time|time:"h:i A" }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doctor & Clinic Details -->
+                <div class="row gy-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <h6 class="text-uppercase text-muted text-meta fw-bold mb-2">Doctor & Specialist</h6>
+                            <h5 class="fw-bold text-dark mb-1">{{ appointment.doctor.full_name }}</h5>
+                            <div class="text-primary small fw-semibold mb-1">{{ appointment.doctor.department.name }} &bull; {{ appointment.doctor.qualification }}</div>
+                            <div class="text-muted small">{{ appointment.doctor.specialization }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <h6 class="text-uppercase text-muted text-meta fw-bold mb-2">Clinic Location</h6>
+                            <h5 class="fw-bold text-dark mb-1">{{ appointment.doctor.clinic_name }}</h5>
+                            <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i> {{ appointment.doctor.clinic_address }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient & Billing Details -->
+                <div class="row gy-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <h6 class="text-uppercase text-muted text-meta fw-bold mb-2">Patient Details</h6>
+                            <div class="fw-bold text-dark fs-6">{{ appointment.patient_name }}</div>
+                            <div class="text-muted small">Phone: {{ appointment.patient_phone }}</div>
+                            <div class="text-muted small">Age / Gender: {{ appointment.patient_age|default:"N/A" }} yrs / {{ appointment.patient_gender }}</div>
+                            {% if appointment.reason_for_visit %}
+                                <div class="text-muted small mt-1">Reason: {{ appointment.reason_for_visit }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100 bg-success-subtle">
+                            <h6 class="text-uppercase text-success text-meta fw-bold mb-2">Consultation Fee</h6>
+                            <div class="h3 fw-bold text-success mb-1">₹{{ appointment.consultation_fee|floatformat:0 }}</div>
+                            <div class="text-success small fw-semibold"><i class="fa-solid fa-money-bill-wave me-1"></i> Pay at Clinic Reception</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Important Notice -->
+                <div class="p-3 bg-light rounded-3 text-muted small mb-4">
+                    <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                    <strong>Queue Advice:</strong> Please show this token slip or quote reference <strong>{{ appointment.booking_reference }}</strong> at the clinic desk. To maintain seamless flow, please arrive 10-15 minutes prior to your time window.
+                </div>
+
+                <!-- Action Controls -->
+                <div class="d-flex gap-2 flex-wrap justify-content-between btn-no-print pt-2">
+                    <a href="{% url 'track_appointment' %}?q={{ appointment.booking_reference }}" class="btn btn-doc-outline">
+                        <i class="fa-solid fa-satellite-dish me-1"></i> Track Live Status
+                    </a>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'search' %}" class="btn btn-light border">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Search More
+                        </a>
+                        <button type="button" onclick="window.print()" class="btn btn-doc-primary">
+                            <i class="fa-solid fa-print me-1"></i> Print Slip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

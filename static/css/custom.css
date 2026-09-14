@@ -1,0 +1,412 @@
+/* DocPulse - Practo-Inspired Healthcare Platform Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --doc-primary: #0284c7;
+    --doc-primary-hover: #0369a1;
+    --doc-secondary: #14bef0;
+    --doc-success: #16a34a;
+    --doc-warning: #ff9e15;
+    --doc-danger: #ef4444;
+    --doc-bg: #f8fafc;
+    --doc-surface: #ffffff;
+    --doc-text-primary: #1e293b;
+    --doc-text-secondary: #64748b;
+    --doc-border: #e2e8f0;
+    --doc-radius: 12px;
+    --doc-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --doc-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --doc-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.03);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--doc-bg);
+    color: var(--doc-text-primary);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Typography */
+h1, .h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--doc-text-primary);
+    letter-spacing: -0.02em;
+}
+
+h2, .h2 {
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: var(--doc-text-primary);
+}
+
+h3, .h3 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--doc-text-primary);
+}
+
+h4, .h4, h5, .h5 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--doc-text-primary);
+}
+
+p, .body-text {
+    font-size: 0.95rem;
+    color: var(--doc-text-secondary);
+}
+
+.text-meta {
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--doc-text-secondary);
+}
+
+/* Navbar */
+.navbar-docpulse {
+    background-color: var(--doc-surface);
+    border-bottom: 1px solid var(--doc-border);
+    padding: 0.85rem 1rem;
+    box-shadow: var(--doc-shadow-sm);
+}
+
+.navbar-brand {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--doc-primary) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar-brand span.pulse {
+    color: var(--doc-secondary);
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--doc-text-primary) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--doc-primary) !important;
+    background-color: rgba(2, 132, 199, 0.05);
+}
+
+/* Buttons */
+.btn-doc-primary {
+    background-color: var(--doc-primary);
+    border-color: var(--doc-primary);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-doc-primary:hover, .btn-doc-primary:focus {
+    background-color: var(--doc-primary-hover);
+    border-color: var(--doc-primary-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.btn-doc-outline {
+    background-color: transparent;
+    border: 1.5px solid var(--doc-primary);
+    color: var(--doc-primary);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-doc-outline:hover {
+    background-color: var(--doc-primary);
+    color: #ffffff;
+}
+
+.btn-doc-cyan {
+    background-color: var(--doc-secondary);
+    border-color: var(--doc-secondary);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+/* Hero Section */
+.hero-practo {
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--doc-border);
+}
+
+.search-bar-container {
+    background: #ffffff;
+    padding: 8px;
+    border-radius: 14px;
+    box-shadow: var(--doc-shadow-lg);
+    border: 1px solid var(--doc-border);
+}
+
+/* Category Pills */
+.category-pill {
+    background-color: #ffffff;
+    border: 1px solid var(--doc-border);
+    border-radius: 50px;
+    padding: 0.6rem 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--doc-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--doc-shadow-sm);
+}
+
+.category-pill:hover, .category-pill.active {
+    background-color: var(--doc-primary);
+    color: #ffffff;
+    border-color: var(--doc-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--doc-shadow-md);
+}
+
+.category-pill i {
+    color: var(--doc-primary);
+    transition: color 0.2s ease;
+}
+
+.category-pill:hover i, .category-pill.active i {
+    color: #ffffff;
+}
+
+/* Doctor Card */
+.doctor-card {
+    background-color: var(--doc-surface);
+    border: 1px solid var(--doc-border);
+    border-radius: var(--doc-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--doc-shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor-card:hover {
+    box-shadow: var(--doc-shadow-md);
+    border-color: #cbd5e1;
+}
+
+.doctor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+    color: var(--doc-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.verified-badge {
+    background-color: #dcfce7;
+    color: var(--doc-success);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rating-badge {
+    background-color: #fef3c7;
+    color: #b45309;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Slots Selection */
+.slot-radio-btn {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    pointer-events: none;
+    clip: rect(0, 0, 0, 0);
+    overflow: hidden;
+}
+
+.slot-label {
+    border: 1.5px solid var(--doc-border);
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--doc-text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    display: block;
+}
+
+.slot-radio-btn:checked + .slot-label {
+    background-color: var(--doc-primary);
+    border-color: var(--doc-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+
+.slot-label:hover {
+    border-color: var(--doc-primary);
+    background-color: #f0f9ff;
+}
+
+/* Digital Appointment Slip / Token Card */
+.appointment-pass {
+    background-color: #ffffff;
+    border: 2px dashed #93c5fd;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--doc-shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.token-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0284c7, #14bef0);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+}
+
+.token-circle .num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.token-circle .label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Status Badges */
+.badge-status-confirmed {
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.badge-status-pending {
+    background-color: #fef3c7;
+    color: #b45309;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.badge-status-in_consultation {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    animation: pulseGlow 1.5s infinite;
+}
+
+.badge-status-completed {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.badge-status-cancelled {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(2, 132, 199, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+}
+
+/* Stats Card */
+.stat-box {
+    background: #ffffff;
+    border-radius: var(--doc-radius);
+    padding: 1.25rem;
+    border: 1px solid var(--doc-border);
+    box-shadow: var(--doc-shadow-sm);
+}
+
+.stat-box .stat-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--doc-text-primary);
+}
+
+/* Footer */
+footer {
+    background-color: #ffffff;
+    border-top: 1px solid var(--doc-border);
+    padding: 2.5rem 0 1.5rem;
+    margin-top: auto;
+}
+
+/* Print Stylesheet for Appointment Slip */
+@media print {
+    header, nav, footer, .btn-no-print, .alert {
+        display: none !important;
+    }
+    body {
+        background-color: #ffffff !important;
+    }
+    .appointment-pass {
+        border: 2px solid #000000 !important;
+        box-shadow: none !important;
+        padding: 1rem !important;
+    }
+}

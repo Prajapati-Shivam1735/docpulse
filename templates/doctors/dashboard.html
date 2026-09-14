@@ -1,0 +1,219 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Doctor Clinic Workspace - {{ profile.full_name }} - DocPulse{% endblock %}
+
+{% block content %}
+<div class="bg-white border-bottom py-3 mb-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="doctor-avatar">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h3 class="fw-bold mb-0">{{ profile.full_name }}</h3>
+                        <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Specialist</span>
+                    </div>
+                    <div class="text-muted small">
+                        {{ profile.specialization }} &bull; {{ profile.department.name }} &bull; {{ profile.clinic_name }}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'doctor_profile_edit' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-gear me-1"></i> Clinic Settings
+                </a>
+                <a href="{% url 'book_appointment' profile.id %}" target="_blank" class="btn btn-sm btn-doc-outline">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Patient View
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <!-- Quick Statistics Strip -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-box">
+                <div class="text-muted small fw-semibold mb-1">Today\'s Total Roster</div>
+                <div class="stat-val text-primary">{{ total_today }}</div>
+                <div class="text-meta">Scheduled appointments</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-box">
+                <div class="text-muted small fw-semibold mb-1">Waiting in Queue</div>
+                <div class="stat-val text-warning">{{ waiting_count }}</div>
+                <div class="text-meta">Pending / Confirmed</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-box">
+                <div class="text-muted small fw-semibold mb-1">In-Consultation</div>
+                <div class="stat-val text-info">{{ in_consultation_count }}</div>
+                <div class="text-meta">Active inside clinic</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-box">
+                <div class="text-muted small fw-semibold mb-1">Consultations Done</div>
+                <div class="stat-val text-success">{{ completed_count }}</div>
+                <div class="text-meta">Est. Revenue: ₹{{ total_earnings|floatformat:0 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Navigation Strip & Slot Generator Control -->
+    <div class="card border rounded-3 p-3 bg-white shadow-sm mb-4">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex gap-2 overflow-auto pb-1">
+                    {% for d in date_nav %}
+                        <a href="?date={{ d|date:'Y-m-d' }}"
+                           class="btn btn-sm {% if selected_date == d %}btn-doc-primary text-white{% else %}btn-outline-secondary bg-white text-dark{% endif %} text-center px-3 py-1 flex-shrink-0 rounded-2">
+                            <span class="small fw-semibold">{{ d|date:'D, M d' }}</span>
+                            {% if d == today %}<span class="badge bg-light text-dark ms-1">Today</span>{% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <!-- Slot Generator Form Modal Trigger -->
+                <form method="post" action="{% url 'generate_slots' %}" class="d-inline-flex gap-2 align-items-center">
+                    {% csrf_token %}
+                    <input type="hidden" name="slot_date" value="{{ selected_date|date:'Y-m-d' }}">
+                    <button type="submit" class="btn btn-sm btn-doc-outline" title="Generate standard 30-minute consultation slots for this date">
+                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Generate Slots for {{ selected_date|date:'M d' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Main Queue Roster -->
+        <div class="col-lg-8">
+            <div class="card border rounded-3 bg-white shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fa-solid fa-users-line text-primary me-2"></i>
+                        Patient Queue Roster for {{ selected_date|date:'l, F d, Y' }}
+                    </h5>
+                    <span class="badge bg-light text-dark border">{{ appointments.count }} patients</span>
+                </div>
+
+                <div class="card-body p-0">
+                    {% if appointments %}
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0 table-hover">
+                                <thead class="table-light small text-muted">
+                                    <tr>
+                                        <th class="ps-3">Token #</th>
+                                        <th>Patient</th>
+                                        <th>Slot Time</th>
+                                        <th>Status</th>
+                                        <th>Reason</th>
+                                        <th class="text-end pe-3">Queue Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appt in appointments %}
+                                        <tr>
+                                            <td class="ps-3">
+                                                <div class="token-badge fw-bold text-primary fs-6">
+                                                    {{ appt.formatted_token }}
+                                                </div>
+                                                <div class="text-meta font-monospace small">#{{ appt.booking_reference }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-dark">{{ appt.patient_name }}</div>
+                                                <div class="text-muted small">{{ appt.patient_phone }}</div>
+                                                {% if appt.patient_age %}
+                                                    <span class="text-meta">{{ appt.patient_age }}y &bull; {{ appt.patient_gender }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold text-dark">{{ appt.appointment_time|time:'h:i A' }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge-status-{{ appt.status|lower }}">
+                                                    {{ appt.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td style="max-width: 150px;">
+                                                <span class="small text-muted text-truncate d-inline-block" style="max-width: 140px;" title="{{ appt.reason_for_visit }}">
+                                                    {{ appt.reason_for_visit|default:"Routine Consultation" }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <!-- Action Dropdown / Buttons to transition status -->
+                                                <form method="post" action="{% url 'update_appointment_status' appt.id %}" class="d-inline-flex gap-1">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="redirect_to" value="{% url 'doctor_dashboard' %}?date={{ selected_date|date:'Y-m-d' }}">
+                                                    
+                                                    {% if appt.status == 'PENDING' or appt.status == 'CONFIRMED' %}
+                                                        <button type="submit" name="status" value="IN_CONSULTATION" class="btn btn-sm btn-primary" title="Call patient inside for consultation">
+                                                            <i class="fa-solid fa-play me-1"></i> Consult
+                                                        </button>
+                                                        <button type="submit" name="status" value="CANCELLED" class="btn btn-sm btn-outline-danger" title="Cancel appointment">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                    {% elif appt.status == 'IN_CONSULTATION' %}
+                                                        <button type="submit" name="status" value="COMPLETED" class="btn btn-sm btn-success" title="Mark consultation as completed">
+                                                            <i class="fa-solid fa-check me-1"></i> Complete
+                                                        </button>
+                                                    {% elif appt.status == 'COMPLETED' %}
+                                                        <span class="text-success small fw-semibold"><i class="fa-solid fa-circle-check"></i> Done</span>
+                                                    {% elif appt.status == 'CANCELLED' %}
+                                                        <span class="text-muted small">Cancelled</span>
+                                                    {% endif %}
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fa-solid fa-calendar-check text-muted fs-1 mb-3"></i>
+                            <h5 class="text-dark">No appointments scheduled for this date</h5>
+                            <p class="text-muted small">Slots generated for this date will appear as patients book them.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Slots Status for this Date -->
+        <div class="col-lg-4">
+            <div class="card border rounded-3 bg-white shadow-sm p-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-clock text-primary me-2"></i>Slots for {{ selected_date|date:'M d' }}</h5>
+                <p class="text-muted small">Overview of generated slots and real-time booking status.</p>
+
+                {% if slots %}
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% for s in slots %}
+                            <div class="badge {% if s.is_booked %}bg-danger-subtle text-danger border border-danger-subtle{% else %}bg-success-subtle text-success border border-success-subtle{% endif %} px-2 py-2 rounded-2 small">
+                                {{ s.start_time|time:'h:i A' }}
+                                {% if s.is_booked %}(Booked){% else %}(Open){% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small border-top pt-2">
+                        <span>Total Slots: {{ slots.count }}</span>
+                        <span>Open: {{ slots|dictsort:"is_booked"|length }}</span>
+                    </div>
+                {% else %}
+                    <div class="alert alert-light border small text-muted">
+                        No slots generated yet for this date. Click "Generate Slots" above to create standard consultation hours.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

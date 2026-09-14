@@ -1,0 +1,106 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Track Live Appointment Status - DocPulse{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">
+                    <i class="fa-solid fa-satellite-dish me-1"></i> Live Consultation Queue Status
+                </span>
+                <h2 class="fw-bold">Track Your Appointment</h2>
+                <p class="text-muted">Enter your registered mobile phone number or booking reference (e.g. DP-20260914-XXXX).</p>
+            </div>
+
+            <!-- Lookup Form -->
+            <div class="card border rounded-3 p-3 bg-white shadow-sm mb-4">
+                <form method="get" action="{% url 'track_appointment' %}">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-primary"></i></span>
+                        <input type="text" name="q" value="{{ lookup_val }}" class="form-control" placeholder="Enter Phone Number or Booking Reference..." required autofocus>
+                        <button type="submit" class="btn btn-doc-primary px-4">
+                            Track Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            {% if appointments is not None %}
+                {% if appointments %}
+                    <h5 class="fw-bold mb-3">Found Appointments ({{ appointments.count }})</h5>
+                    <div class="d-flex flex-column gap-3">
+                        {% for appt in appointments %}
+                            <div class="card border rounded-3 p-4 bg-white shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-primary text-white fs-6 px-3 py-2 rounded-pill">
+                                            Token {{ appt.formatted_token }}
+                                        </span>
+                                        <span class="text-muted font-monospace small">#{{ appt.booking_reference }}</span>
+                                    </div>
+                                    <span class="badge-status-{{ appt.status|lower }}">
+                                        <i class="fa-solid fa-circle-dot me-1"></i> {{ appt.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <div class="row gy-2 mb-3">
+                                    <div class="col-md-4">
+                                        <div class="small text-muted">Patient Name:</div>
+                                        <div class="fw-bold text-dark fs-6">{{ appt.patient_name }}</div>
+                                        <div class="text-muted small">{{ appt.patient_phone }}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted">Consulting Doctor:</div>
+                                        <div class="fw-bold text-dark fs-6">{{ appt.doctor.full_name }}</div>
+                                        <div class="text-primary small">{{ appt.doctor.department.name }} &bull; {{ appt.doctor.clinic_name }}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted">Date & Time:</div>
+                                        <div class="fw-bold text-dark fs-6">{{ appt.appointment_date|date:"l, F d, Y" }}</div>
+                                        <div class="text-muted small"><i class="fa-regular fa-clock me-1 text-primary"></i> Slot: {{ appt.appointment_time|time:"h:i A" }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Current Status Description -->
+                                <div class="p-3 bg-light rounded-3 small mb-3">
+                                    {% if appt.status == 'IN_CONSULTATION' %}
+                                        <div class="text-primary fw-bold">
+                                            <i class="fa-solid fa-spinner fa-spin me-1"></i> Doctor is currently consulting this patient! Please be ready at the door.
+                                        </div>
+                                    {% elif appt.status == 'CONFIRMED' %}
+                                        <div class="text-success fw-semibold">
+                                            <i class="fa-solid fa-circle-check me-1"></i> Appointment confirmed. Waiting in doctor's queue.
+                                        </div>
+                                    {% elif appt.status == 'COMPLETED' %}
+                                        <div class="text-secondary">
+                                            <i class="fa-solid fa-check-double me-1"></i> Consultation completed. Thank you for using DocPulse!
+                                        </div>
+                                    {% elif appt.status == 'CANCELLED' %}
+                                        <div class="text-danger">
+                                            <i class="fa-solid fa-circle-xmark me-1"></i> This appointment has been cancelled.
+                                        </div>
+                                    {% else %}
+                                        <div class="text-warning">
+                                            <i class="fa-solid fa-hourglass-half me-1"></i> Status: {{ appt.get_status_display }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="text-end">
+                                    <a href="{% url 'appointment_slip' appt.booking_reference %}" class="btn btn-sm btn-doc-primary">
+                                        <i class="fa-solid fa-ticket me-1"></i> View Digital Pass
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

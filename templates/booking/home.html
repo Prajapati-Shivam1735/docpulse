@@ -1,0 +1,220 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}DocPulse - Practo-Inspired Healthcare Discovery & Queue Management{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-practo">
+    <div class="container">
+        <div class="row align-items-center justify-content-center text-center">
+            <div class="col-lg-9">
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3">
+                    <i class="fa-solid fa-shield-halved me-1"></i> 100% Verified Healthcare Specialists
+                </span>
+                <h1 class="display-5 fw-bold mb-3">Skip Clinic Queues.<br>Book Verified Doctors Instantly.</h1>
+                <p class="lead text-muted mb-4">
+                    DocPulse connects you with trusted doctors, shows upfront consultation fees, and generates live queue tokens so you never wait unnecessarily in waiting rooms.
+                </p>
+
+                <!-- Practo-Style Search Bar -->
+                <div class="search-bar-container mx-auto" style="max-width: 820px;">
+                    <form action="{% url 'search' %}" method="get" class="row g-2 align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-0 text-primary">
+                                    <i class="fa-solid fa-stethoscope"></i>
+                                </span>
+                                <select name="dept" class="form-select border-0 bg-white shadow-none ps-0">
+                                    <option value="">All Specialties</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group border-start">
+                                <span class="input-group-text bg-white border-0 text-muted">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input type="text" name="q" class="form-control border-0 bg-white shadow-none ps-0" placeholder="Search by doctor name, qualification, or clinic...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-doc-primary w-100 py-2">
+                                <i class="fa-solid fa-search me-1"></i> Find Doctors
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Category Pills Section -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <div>
+                <h3 class="mb-1">Explore Top Specialties</h3>
+                <p class="text-muted mb-0">Consult with verified doctors across diverse healthcare domains</p>
+            </div>
+            <a href="{% url 'search' %}" class="btn btn-sm btn-doc-outline">
+                View All Specialties <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 pt-2">
+            {% for dept in departments %}
+                <a href="{% url 'search' %}?dept={{ dept.id }}" class="category-pill">
+                    <i class="fa-solid {{ dept.icon|default:'fa-stethoscope' }}"></i>
+                    <span>{{ dept.name }}</span>
+                </a>
+            {% empty %}
+                <a href="{% url 'search' %}?q=General" class="category-pill">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    <span>General Physician</span>
+                </a>
+                <a href="{% url 'search' %}?q=Cardio" class="category-pill">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <span>Cardiology</span>
+                </a>
+                <a href="{% url 'search' %}?q=Derma" class="category-pill">
+                    <i class="fa-solid fa-spa"></i>
+                    <span>Dermatology</span>
+                </a>
+                <a href="{% url 'search' %}?q=Pedia" class="category-pill">
+                    <i class="fa-solid fa-baby"></i>
+                    <span>Pediatrics</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Verified Doctors -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h2 class="mb-1">Featured Medical Specialists</h2>
+                <p class="text-muted mb-0">Book direct consultations with highly rated doctors</p>
+            </div>
+            <a href="{% url 'search' %}" class="text-primary fw-semibold text-decoration-none">
+                See all available doctors <i class="fa-solid fa-chevron-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for doc in featured_doctors %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border rounded-3 p-3 bg-white shadow-sm hover-shadow">
+                        <div class="d-flex gap-3">
+                            <div class="doctor-avatar">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="verified-badge">
+                                        <i class="fa-solid fa-circle-check"></i> Verified
+                                    </span>
+                                    <span class="rating-badge">
+                                        <i class="fa-solid fa-star"></i> {{ doc.rating|default:"4.9" }}
+                                    </span>
+                                </div>
+                                <h4 class="mt-2 mb-1">{{ doc.full_name }}</h4>
+                                <div class="text-primary fw-semibold small mb-1">{{ doc.specialization }}</div>
+                                <div class="text-muted small">{{ doc.qualification }} &bull; {{ doc.experience_years }} yrs exp</div>
+                            </div>
+                        </div>
+                        <hr class="my-3 text-muted opacity-25">
+                        <div class="d-flex align-items-center justify-content-between small text-muted mb-3">
+                            <div>
+                                <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ doc.clinic_name }}
+                            </div>
+                            <div class="fw-bold text-dark fs-6">
+                                ₹{{ doc.consultation_fee|floatformat:0 }}
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="{% url 'book_appointment' doc.id %}" class="btn btn-doc-primary w-100">
+                                <i class="fa-solid fa-calendar-check me-1"></i> Book Appointment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5 bg-white rounded-3 border">
+                        <i class="fa-solid fa-user-doctor text-muted fs-1 mb-3"></i>
+                        <h4 class="text-dark">No doctors registered yet</h4>
+                        <p class="text-muted">Doctors can self-register using the provider onboarding link.</p>
+                        <a href="{% url 'doctor_register' %}" class="btn btn-doc-primary">
+                            <i class="fa-solid fa-plus me-1"></i> Register as a Doctor
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- How DocPulse Works -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How DocPulse Eliminates Queues</h2>
+            <p class="text-muted">Simple 3-step digital healthcare experience</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 h-100 bg-light border">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 1.5rem;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <h4 class="fw-bold">1. Discover Specialist</h4>
+                    <p class="text-muted small">Filter by specialty, view medical qualifications, reviews, and transparent consultation fees upfront.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 h-100 bg-light border">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 1.5rem;">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <h4 class="fw-bold">2. Select Real-Time Slot</h4>
+                    <p class="text-muted small">Choose your preferred morning, afternoon, or evening consultation window with live collision prevention.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 h-100 bg-light border">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 1.5rem;">
+                        <i class="fa-solid fa-ticket"></i>
+                    </div>
+                    <h4 class="fw-bold">3. Get Queue Token</h4>
+                    <p class="text-muted small">Receive an instant digital appointment slip with your daily queue token. Track status online and walk in just in time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Doctor Callout Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff;">
+    <div class="container">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-8">
+                <h2 class="text-white fw-bold mb-2">Are you a Doctor or Healthcare Specialist?</h2>
+                <p class="text-white-50 mb-0">Join DocPulse to publish your practice, manage patient rosters, track consultation queues, and save administrative hours.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'doctor_register' %}" class="btn btn-light btn-lg text-primary fw-bold px-4 shadow">
+                    <i class="fa-solid fa-user-doctor me-2"></i> Join as Doctor
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

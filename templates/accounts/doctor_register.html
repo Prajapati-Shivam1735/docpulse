@@ -1,0 +1,120 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Doctor Self-Onboarding - DocPulse{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border rounded-3 p-4 p-md-5 bg-white shadow-sm">
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">
+                        <i class="fa-solid fa-hospital-user me-1"></i> Specialist Onboarding Portal
+                    </span>
+                    <h2 class="fw-bold">Join DocPulse Healthcare Network</h2>
+                    <p class="text-muted small">Publish your clinic profile, automate queue tokens, and eliminate manual waiting rooms.</p>
+                </div>
+
+                <form method="post" action="{% url 'doctor_register' %}">
+                    {% csrf_token %}
+
+                    <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-id-card text-primary me-2"></i>1. Account & Credentials
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Doctor Full Name <span class="text-danger">*</span></label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}<div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Mobile Phone Number (Primary Login) <span class="text-danger">*</span></label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}<div class="text-danger small mt-1">{{ form.phone_number.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Email Address (Optional)</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Password <span class="text-danger">*</span></label>
+                            {{ form.password }}
+                            {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                            {{ form.confirm_password }}
+                            {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-stethoscope text-primary me-2"></i>2. Medical Specialization & Experience
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Specialty Department <span class="text-danger">*</span></label>
+                            {{ form.department }}
+                            {% if form.department.errors %}<div class="text-danger small mt-1">{{ form.department.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Degrees & Qualifications <span class="text-danger">*</span></label>
+                            {{ form.qualification }}
+                            {% if form.qualification.errors %}<div class="text-danger small mt-1">{{ form.qualification.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Sub-Specialization <span class="text-danger">*</span></label>
+                            {{ form.specialization }}
+                            {% if form.specialization.errors %}<div class="text-danger small mt-1">{{ form.specialization.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Years Experience <span class="text-danger">*</span></label>
+                            {{ form.experience_years }}
+                            {% if form.experience_years.errors %}<div class="text-danger small mt-1">{{ form.experience_years.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Consultation Fee (₹) <span class="text-danger">*</span></label>
+                            {{ form.consultation_fee }}
+                            {% if form.consultation_fee.errors %}<div class="text-danger small mt-1">{{ form.consultation_fee.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-hospital text-primary me-2"></i>3. Clinic Setup
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Clinic / Hospital Facility Name <span class="text-danger">*</span></label>
+                            {{ form.clinic_name }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Clinic Physical Address <span class="text-danger">*</span></label>
+                            {{ form.clinic_address }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Professional Bio & Patient Philosophy</label>
+                            {{ form.bio }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-doc-primary btn-lg w-100 mb-3 shadow-sm">
+                        <i class="fa-solid fa-hospital-user me-2"></i> Complete Onboarding & Open Clinic Desk
+                    </button>
+                </form>
+
+                <div class="text-center small text-muted pt-2 border-top">
+                    Already registered as a Doctor? 
+                    <a href="{% url 'doctor_login' %}" class="text-primary fw-semibold text-decoration-none">
+                        Sign In to Clinic Workspace
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

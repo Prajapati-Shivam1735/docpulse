@@ -1,0 +1,60 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Doctor Workspace Login - DocPulse{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border rounded-3 p-4 p-md-5 bg-white shadow-sm">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 54px; height: 54px;">
+                        <i class="fa-solid fa-user-doctor fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold">Doctor Clinic Desk</h3>
+                    <p class="text-muted small">Sign in to manage your consultation queue and clinic slots</p>
+                </div>
+
+                <form method="post" action="{% url 'doctor_login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Doctor Registered Mobile Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-phone"></i></span>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-lock"></i></span>
+                            {{ form.password }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-doc-primary btn-lg w-100 mb-3 shadow-sm">
+                        <i class="fa-solid fa-stethoscope me-1"></i> Access Clinic Workspace
+                    </button>
+                </form>
+
+                <div class="text-center small text-muted pt-2 border-top">
+                    New Healthcare Specialist? 
+                    <a href="{% url 'doctor_register' %}" class="text-primary fw-semibold text-decoration-none">
+                        Onboard your clinic now
+                    </a>
+                </div>
+
+                <div class="text-center small text-muted mt-3">
+                    Looking for patient portal? 
+                    <a href="{% url 'patient_login' %}" class="text-secondary fw-semibold text-decoration-none">
+                        Patient Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

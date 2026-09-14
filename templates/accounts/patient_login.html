@@ -1,0 +1,60 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Patient Login - DocPulse{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border rounded-3 p-4 p-md-5 bg-white shadow-sm">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 54px; height: 54px;">
+                        <i class="fa-solid fa-user-check fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold">Patient Login</h3>
+                    <p class="text-muted small">Enter your phone number to access appointments & history</p>
+                </div>
+
+                <form method="post" action="{% url 'patient_login' %}{% if next_url %}?next={{ next_url }}{% endif %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Mobile Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-phone"></i></span>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-lock"></i></span>
+                            {{ form.password }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-doc-primary btn-lg w-100 mb-3 shadow-sm">
+                        <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Sign In to DocPulse
+                    </button>
+                </form>
+
+                <div class="text-center small text-muted pt-2 border-top">
+                    Don't have an account yet? 
+                    <a href="{% url 'patient_register' %}{% if next_url %}?next={{ next_url }}{% endif %}" class="text-primary fw-semibold text-decoration-none">
+                        Register as Patient
+                    </a>
+                </div>
+
+                <div class="text-center small text-muted mt-3">
+                    Are you a Healthcare Provider? 
+                    <a href="{% url 'doctor_login' %}" class="text-secondary fw-semibold text-decoration-none">
+                        Doctor Portal Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

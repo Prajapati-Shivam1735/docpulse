@@ -1,0 +1,158 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Find Doctors & Specialists - DocPulse{% endblock %}
+
+{% block content %}
+<div class="bg-white border-bottom py-3">
+    <div class="container">
+        <!-- Search bar preserving parameters -->
+        <form method="get" action="{% url 'search' %}" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <select name="dept" class="form-select">
+                    <option value="">All Specialties</option>
+                    {% for d in departments %}
+                        <option value="{{ d.id }}" {% if dept_id == d.id|stringformat:"s" or dept_id == d.slug %}selected{% endif %}>
+                            {{ d.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search doctor, clinic, qualification...">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="sort" class="form-select">
+                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Top Rated</option>
+                    <option value="experience" {% if sort_by == 'experience' %}selected{% endif %}>Experience: High to Low</option>
+                    <option value="fee_low" {% if sort_by == 'fee_low' %}selected{% endif %}>Fee: Low to High</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-doc-primary w-100">
+                    <i class="fa-solid fa-filter me-1"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Main Results Column -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">
+                    {% if selected_dept %}
+                        {{ selected_dept.name }} Specialists
+                    {% elif query %}
+                        Doctors matching "{{ query }}"
+                    {% else %}
+                        All Available Doctors
+                    {% endif %}
+                    <span class="badge bg-light text-secondary border ms-2">{{ doctors.count }} available</span>
+                </h4>
+                {% if query or dept_id %}
+                    <a href="{% url 'search' %}" class="btn btn-sm btn-link text-decoration-none text-muted">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Clear Filters
+                    </a>
+                {% endif %}
+            </div>
+
+            {% for doc in doctors %}
+                <div class="doctor-card">
+                    <div class="row align-items-center gy-3">
+                        <div class="col-sm-2 text-center text-sm-start">
+                            <div class="doctor-avatar mx-auto mx-sm-0">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <h3 class="h4 mb-0">{{ doc.full_name }}</h3>
+                                <span class="verified-badge">
+                                    <i class="fa-solid fa-circle-check"></i> Verified
+                                </span>
+                            </div>
+                            <div class="text-primary fw-semibold small mb-1">
+                                {{ doc.specialization }} &bull; {{ doc.department.name }}
+                            </div>
+                            <div class="text-muted small mb-2">
+                                <i class="fa-solid fa-graduation-cap me-1"></i> {{ doc.qualification }} &bull; {{ doc.experience_years }} Years Experience
+                            </div>
+                            <div class="text-muted small">
+                                <i class="fa-solid fa-hospital me-1 text-secondary"></i> {{ doc.clinic_name }}
+                            </div>
+                            <div class="text-muted text-meta">
+                                <i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ doc.clinic_address }}
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-sm-end border-start-sm pt-2 pt-sm-0">
+                            <div class="d-flex align-items-center justify-content-sm-end gap-2 mb-2">
+                                <span class="rating-badge">
+                                    <i class="fa-solid fa-star"></i> {{ doc.rating|default:"4.9" }}
+                                </span>
+                                <span class="text-muted text-meta">({{ doc.total_reviews|default:"50+" }} patient stories)</span>
+                            </div>
+                            <div class="mb-3">
+                                <span class="text-muted small d-block">Consultation Fee</span>
+                                <span class="h4 text-dark fw-bold">₹{{ doc.consultation_fee|floatformat:0 }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-success-subtle text-success small">
+                                    <i class="fa-solid fa-bolt me-1"></i> Today Available
+                                </span>
+                            </div>
+                            <a href="{% url 'book_appointment' doc.id %}" class="btn btn-doc-primary w-100">
+                                <i class="fa-solid fa-calendar-check me-1"></i> Book Slot
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="p-5 bg-white rounded-3 border text-center my-4">
+                    <i class="fa-solid fa-user-doctor text-muted fs-1 mb-3"></i>
+                    <h4 class="text-dark">No doctors match your criteria</h4>
+                    <p class="text-muted mb-4">Try broadening your search query or removing specialty filters.</p>
+                    <a href="{% url 'search' %}" class="btn btn-doc-primary">
+                        View All Doctors
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Sidebar / Tips Column -->
+        <div class="col-lg-4">
+            <div class="card border rounded-3 p-4 bg-white mb-4 shadow-sm">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-shield-halved text-primary me-2"></i>DocPulse Guarantee</h5>
+                <ul class="list-unstyled small text-muted d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="fa-solid fa-circle-check text-success mt-1"></i>
+                        <div><strong>Zero Booking Fees:</strong> You pay the exact clinic consultation fee with no hidden service charges.</div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="fa-solid fa-circle-check text-success mt-1"></i>
+                        <div><strong>Live Queue Token:</strong> Receive your queue number to walk in right when the doctor is ready.</div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="fa-solid fa-circle-check text-success mt-1"></i>
+                        <div><strong>Verified Credentials:</strong> Doctor qualifications and medical licenses are thoroughly audited.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Need Help Tracking? -->
+            <div class="card border rounded-3 p-4 bg-light shadow-sm">
+                <h5 class="fw-bold mb-2">Already booked?</h5>
+                <p class="text-muted small">Check the real-time status of your appointment and token number.</p>
+                <a href="{% url 'track_appointment' %}" class="btn btn-sm btn-doc-outline w-100">
+                    <i class="fa-solid fa-receipt me-1"></i> Track Your Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

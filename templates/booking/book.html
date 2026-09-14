@@ -1,0 +1,284 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Book Appointment with {{ doctor.full_name }} - DocPulse{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'search' %}" class="text-decoration-none">Doctors</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Book with {{ doctor.full_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row gy-4">
+        <!-- Left Column: Doctor Summary -->
+        <div class="col-lg-4">
+            <div class="card border rounded-3 p-4 bg-white shadow-sm sticky-top" style="top: 90px;">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="doctor-avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <div>
+                        <span class="verified-badge mb-1">
+                            <i class="fa-solid fa-circle-check"></i> Verified
+                        </span>
+                        <h4 class="mb-0">{{ doctor.full_name }}</h4>
+                        <div class="text-primary small fw-semibold">{{ doctor.specialization }}</div>
+                    </div>
+                </div>
+
+                <div class="border-top pt-3 text-muted small d-flex flex-column gap-2">
+                    <div><strong>Department:</strong> {{ doctor.department.name }}</div>
+                    <div><strong>Qualification:</strong> {{ doctor.qualification }}</div>
+                    <div><strong>Experience:</strong> {{ doctor.experience_years }} Years</div>
+                    <div><strong>Clinic:</strong> {{ doctor.clinic_name }}</div>
+                    <div><strong>Address:</strong> {{ doctor.clinic_address }}</div>
+                    <div><strong>Timing:</strong> {{ doctor.working_hours }}</div>
+                </div>
+
+                <hr class="my-3 text-muted opacity-25">
+
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-2">
+                    <span class="text-muted small">Consultation Fee</span>
+                    <span class="h4 text-dark fw-bold mb-0">₹{{ doctor.consultation_fee|floatformat:0 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Booking Slot Picker and Patient Form -->
+        <div class="col-lg-8">
+            <div class="card border rounded-3 p-4 bg-white shadow-sm mb-4">
+                <h4 class="fw-bold mb-3"><i class="fa-solid fa-calendar-check text-primary me-2"></i>Select Consultation Slot</h4>
+
+                <!-- Date Carousel / Strip -->
+                <div class="d-flex gap-2 overflow-auto pb-3 mb-3">
+                    {% for d in next_days %}
+                        <a href="?date={{ d|date:'Y-m-d' }}"
+                           class="btn {% if selected_date == d %}btn-doc-primary text-white{% else %}btn-outline-secondary bg-white text-dark{% endif %} text-center px-3 py-2 flex-shrink-0 rounded-3">
+                            <div class="small fw-semibold">{{ d|date:'D' }}</div>
+                            <div class="fs-5 fw-bold">{{ d|date:'d' }}</div>
+                            <div class="text-meta">{{ d|date:'M' }}</div>
+                        </a>
+                    {% endfor %}
+                </div>
+
+                <form id="bookingForm" method="post" action="{% url 'book_appointment' doctor.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+
+                    <!-- Slot Selector Groupings -->
+                    <div id="slotsContainer" class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold text-dark mb-0">Available Slots for {{ selected_date|date:'l, F d, Y' }}:</label>
+                            <span class="badge bg-light text-primary border small"><i class="fa-solid fa-bolt me-1"></i> Instant Confirmation</span>
+                        </div>
+
+                        {% if morning_slots or afternoon_slots or evening_slots %}
+                            <!-- Morning Slots -->
+                            {% if morning_slots %}
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-2">
+                                        <i class="fa-regular fa-sun text-warning me-1"></i> Morning
+                                    </div>
+                                    <div class="row g-2">
+                                        {% for s in morning_slots %}
+                                            <div class="col-6 col-sm-4 col-md-3">
+                                                <input type="radio" name="slot_id" id="slot_{{ s.id }}" value="{{ s.id }}" data-time="{{ s.start_time|time:'h:i A' }} (Morning)" class="slot-radio-btn" {% if forloop.first %}checked{% endif %}>
+                                                <label for="slot_{{ s.id }}" class="slot-label">
+                                                    {{ s.start_time|time:'h:i A' }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- Afternoon Slots -->
+                            {% if afternoon_slots %}
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-2">
+                                        <i class="fa-solid fa-sun text-primary me-1"></i> Afternoon
+                                    </div>
+                                    <div class="row g-2">
+                                        {% for s in afternoon_slots %}
+                                            <div class="col-6 col-sm-4 col-md-3">
+                                                <input type="radio" name="slot_id" id="slot_{{ s.id }}" value="{{ s.id }}" data-time="{{ s.start_time|time:'h:i A' }} (Afternoon)" class="slot-radio-btn" {% if not morning_slots and forloop.first %}checked{% endif %}>
+                                                <label for="slot_{{ s.id }}" class="slot-label">
+                                                    {{ s.start_time|time:'h:i A' }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- Evening Slots -->
+                            {% if evening_slots %}
+                                <div class="mb-3">
+                                    <div class="text-muted small fw-bold mb-2">
+                                        <i class="fa-regular fa-moon text-secondary me-1"></i> Evening
+                                    </div>
+                                    <div class="row g-2">
+                                        {% for s in evening_slots %}
+                                            <div class="col-6 col-sm-4 col-md-3">
+                                                <input type="radio" name="slot_id" id="slot_{{ s.id }}" value="{{ s.id }}" data-time="{{ s.start_time|time:'h:i A' }} (Evening)" class="slot-radio-btn" {% if not morning_slots and not afternoon_slots and forloop.first %}checked{% endif %}>
+                                                <label for="slot_{{ s.id }}" class="slot-label">
+                                                    {{ s.start_time|time:'h:i A' }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        {% else %}
+                            <div class="alert alert-warning border-0 rounded-3">
+                                <i class="fa-solid fa-clock text-warning me-2"></i> No vacant slots found for this date. Please pick another day or contact the clinic.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Selected Slot Live Feedback Indicator -->
+                    <div id="slotBanner" class="alert alert-primary py-2 px-3 mb-4 d-flex align-items-center justify-content-between rounded-3 border-0">
+                        <div>
+                            <i class="fa-solid fa-circle-check text-primary me-2"></i>
+                            <strong>Selected Slot:</strong> <span id="slotDisplayText" class="fw-bold text-dark">Please select a slot</span>
+                        </div>
+                        <span class="badge bg-primary px-3 py-1">Confirmed Time</span>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <!-- Patient Details Form -->
+                    <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-pen text-primary me-2"></i>Patient Consultation Details</h5>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Patient Full Name <span class="text-danger">*</span></label>
+                            <input type="text" id="patientName" name="patient_name" value="{{ initial_name }}" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Patient Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" id="patientPhone" name="patient_phone" value="{{ initial_phone }}" class="form-control" placeholder="e.g. 9876543210" required>
+                            <div class="form-text small">Used for receiving live queue status and appointment slip.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Age</label>
+                            <input type="number" name="patient_age" value="{{ initial_age }}" class="form-control" placeholder="Age" min="1" max="120">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Gender</label>
+                            <select name="patient_gender" class="form-select">
+                                <option value="Male" {% if initial_gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if initial_gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if initial_gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Fee Payable at Clinic</label>
+                            <div class="form-control bg-light fw-bold text-success">
+                                ₹{{ doctor.consultation_fee|floatformat:0 }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Reason for Visit / Symptoms (Optional)</label>
+                            <textarea name="reason_for_visit" class="form-control" rows="2" placeholder="e.g. Persistent fever, cough since 2 days, general checkup..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Error Alert Placeholder -->
+                    <div id="bookingErrorAlert" class="alert alert-danger d-none py-2 px-3 mb-3 border-0 rounded-3">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>
+                        <span id="bookingErrorMessage">Please check the required fields.</span>
+                    </div>
+
+                    <div class="mt-4 pt-2">
+                        <button type="submit" id="confirmSubmitBtn" class="btn btn-doc-primary btn-lg w-100 shadow-sm" {% if not morning_slots and not afternoon_slots and not evening_slots %}disabled{% endif %}>
+                            <i class="fa-solid fa-circle-check me-2"></i> Confirm Appointment & Generate Token
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document += document.addEventListener('DOMContentLoaded', function() {
+    const bookingForm = document.getElementById('bookingForm');
+    const slotRadios = document.querySelectorAll('input[name="slot_id"]');
+    const slotDisplayText = document.getElementById('slotDisplayText');
+    const slotBanner = document.getElementById('slotBanner');
+    const errorAlert = document.getElementById('bookingErrorAlert');
+    const errorMessage = document.getElementById('bookingErrorMessage');
+    const submitBtn = document.getElementById('confirmSubmitBtn');
+    const slotsContainer = document.getElementById('slotsContainer');
+
+    function updateSelectedSlotDisplay() {
+        const checkedSlot = document.querySelector('input[name="slot_id"]:checked');
+        if (checkedSlot) {
+            const timeLabel = checkedSlot.getAttribute('data-time') || checkedSlot.nextElementSibling.innerText.trim();
+            slotDisplayText.textContent = timeLabel;
+            slotBanner.classList.remove('alert-warning');
+            slotBanner.classList.add('alert-primary');
+            if (errorAlert) errorAlert.classList.add('d-none');
+        } else {
+            slotDisplayText.textContent = 'None selected - please click a time slot above';
+            slotBanner.classList.remove('alert-primary');
+            slotBanner.classList.add('alert-warning');
+        }
+    }
+
+    // Attach click listeners to all radio buttons
+    slotRadios.forEach(radio => {
+        radio.addEventListener('change', updateSelectedSlotDisplay);
+    });
+
+    // Run initial update
+    updateSelectedSlotDisplay();
+
+    // Form submission validation
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            const checkedSlot = document.querySelector('input[name="slot_id"]:checked');
+            const patientName = document.getElementById('patientName').value.trim();
+            const patientPhone = document.getElementById('patientPhone').value.trim();
+
+            if (!checkedSlot) {
+                e.preventDefault();
+                errorAlert.classList.remove('d-none');
+                errorMessage.textContent = 'Please select an available consultation slot above.';
+                slotsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            if (!patientName) {
+                e.preventDefault();
+                errorAlert.classList.remove('d-none');
+                errorMessage.textContent = 'Please enter the patient full name.';
+                document.getElementById('patientName').focus();
+                return false;
+            }
+
+            if (!patientPhone) {
+                e.preventDefault();
+                errorAlert.classList.remove('d-none');
+                errorMessage.textContent = 'Please enter the patient phone number.';
+                document.getElementById('patientPhone').focus();
+                return false;
+            }
+
+            // Valid submission - show spinner on button to avoid multiple clicks
+            errorAlert.classList.add('d-none');
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Confirming & Generating Token...';
+            submitBtn.style.pointerEvents = 'none';
+        });
+    }
+});
+</script>
+{% endblock %}

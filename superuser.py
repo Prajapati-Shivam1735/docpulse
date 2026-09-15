@@ -8,16 +8,16 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-phone = '9999999999'
+phone_number = '9999999999'
 password = 'admin123'
-name = 'Internal Admin'
+full_name = 'Internal Admin'
 
-if not User.objects.filter(phone=phone).exists():
+if not User.objects.filter(phone_number=phone_number).exists():
     User.objects.create_superuser(
-        phone=phone,
+        phone_number=phone_number,
         password=password,
-        name=name
+        full_name=full_name
     )
-    print(f"Superuser {phone} created successfully.")
+    print(f"Superuser {phone_number} created successfully.")
 else:
-    print(f"Superuser {phone} already exists.")
+    print(f"Superuser {phone_number} already exists.")

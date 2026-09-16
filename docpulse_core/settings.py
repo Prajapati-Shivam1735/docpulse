@@ -65,6 +65,19 @@ DATABASES = {
     }
 }
 
+# Production PostgreSQL database for Render / Cloud deployments
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    try:
+        import dj_database_url
+        DATABASES['default'] = dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True
+        )
+    except Exception as e:
+        pass
+
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 

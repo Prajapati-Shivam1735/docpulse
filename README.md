@@ -1,4 +1,4 @@
-﻿# DocPulse - Practo-Inspired Healthcare Discovery & Queue Management Platform
+﻿# DocPulse - Healthcare Discovery & Queue Management Platform
 
 DocPulse is a clean, consumer-facing healthcare discovery and appointment management platform built on Django 5/6 MVC architecture. It empowers patients to search verified medical specialists, view transparent consultation fees, and receive real-time queue tokens that eliminate physical clinic waiting lines. Doctors receive a self-service onboarding workspace, slot generator, and live patient consultation desk.
 

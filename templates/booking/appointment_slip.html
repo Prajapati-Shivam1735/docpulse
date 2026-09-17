@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Appointment Slip - {{ appointment.booking_reference }} - DocPulse{% endblock %}
@@ -54,9 +54,21 @@
                     </div>
                     <div class="col-md-6">
                         <div class="p-3 border rounded-3 h-100">
-                            <h6 class="text-uppercase text-muted text-meta fw-bold mb-2">Clinic Location</h6>
+                            <h6 class="text-uppercase text-muted text-meta fw-bold mb-2">Clinic Location & Contact</h6>
                             <h5 class="fw-bold text-dark mb-1">{{ appointment.doctor.clinic_name }}</h5>
-                            <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i> {{ appointment.doctor.clinic_address }}</p>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i> {{ appointment.doctor.clinic_address }}</p>
+                            <div class="small text-muted mb-3">
+                                <i class="fa-solid fa-phone text-primary me-1"></i> <strong>Clinic Helpline:</strong> 
+                                <a href="tel:{{ appointment.doctor.user.phone_number }}" class="fw-bold text-primary text-decoration-none">+91 {{ appointment.doctor.user.phone_number }}</a>
+                            </div>
+                            <div class="d-flex gap-2 btn-no-print">
+                                <a href="tel:{{ appointment.doctor.user.phone_number }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-phone me-1"></i> Call Clinic
+                                </a>
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ appointment.doctor.clinic_name|urlencode }}+{{ appointment.doctor.clinic_address|urlencode }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fa-solid fa-map-location-dot me-1"></i> Directions
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

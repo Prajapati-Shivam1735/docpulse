@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Book Appointment with {{ doctor.full_name }} - DocPulse{% endblock %}
@@ -37,6 +37,7 @@
                     <div><strong>Clinic:</strong> {{ doctor.clinic_name }}</div>
                     <div><strong>Address:</strong> {{ doctor.clinic_address }}</div>
                     <div><strong>Timing:</strong> {{ doctor.working_hours }}</div>
+                    <div><strong>Helpline:</strong> <a href="tel:{{ doctor.user.phone_number }}" class="fw-bold text-primary text-decoration-none">+91 {{ doctor.user.phone_number }}</a></div>
                 </div>
 
                 <hr class="my-3 text-muted opacity-25">

@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Find Doctors & Specialists - DocPulse{% endblock %}
@@ -88,6 +88,9 @@
                             </div>
                             <div class="text-muted text-meta">
                                 <i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ doc.clinic_address }}
+                            </div>
+                            <div class="text-muted small mt-1">
+                                <i class="fa-solid fa-phone me-1 text-primary"></i> <strong>Helpline:</strong> <a href="tel:{{ doc.user.phone_number }}" class="fw-semibold text-primary text-decoration-none">+91 {{ doc.user.phone_number }}</a>
                             </div>
                         </div>
                         <div class="col-sm-4 text-sm-end border-start-sm pt-2 pt-sm-0">

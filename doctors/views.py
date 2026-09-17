@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -60,6 +60,8 @@ def doctor_dashboard_view(request):
 
     # Slots for the selected date
     slots = Slot.objects.filter(doctor=profile, date=selected_date).order_by('start_time')
+    open_slots_count = slots.filter(is_booked=False).count()
+    booked_slots_count = slots.filter(is_booked=True).count()
 
     # Upcoming 7 dates for easy date navigation
     date_nav = [today + timedelta(days=i) for i in range(7)]
@@ -70,6 +72,8 @@ def doctor_dashboard_view(request):
         'today': today,
         'appointments': appointments,
         'slots': slots,
+        'open_slots_count': open_slots_count,
+        'booked_slots_count': booked_slots_count,
         'total_today': total_today,
         'waiting_count': waiting_count,
         'in_consultation_count': in_consultation_count,

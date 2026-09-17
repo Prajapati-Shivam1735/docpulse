@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Doctor Clinic Workspace - {{ profile.full_name }} - DocPulse{% endblock %}
@@ -204,8 +204,9 @@
                         {% endfor %}
                     </div>
                     <div class="d-flex justify-content-between text-muted small border-top pt-2">
-                        <span>Total Slots: {{ slots.count }}</span>
-                        <span>Open: {{ slots|dictsort:"is_booked"|length }}</span>
+                        <span>Total: <strong>{{ slots.count }}</strong></span>
+                        <span>Booked: <strong class="text-danger">{{ booked_slots_count }}</strong></span>
+                        <span>Open: <strong class="text-success">{{ open_slots_count }}</strong></span>
                     </div>
                 {% else %}
                     <div class="alert alert-light border small text-muted">
